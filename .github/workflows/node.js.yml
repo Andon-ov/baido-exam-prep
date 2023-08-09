@@ -33,3 +33,21 @@ jobs:
       run: npm run test:unit 
     - name: Display Softuni username
       run: echo "baido"
+  
+  # Define the "deploy" job
+  deploy:
+    # Specify that this job depends on the successful completion of the "build" job
+    needs: build
+
+    # Specify the operating system for the job
+    runs-on: ubuntu-latest
+
+    # Specify the steps to be executed in the job
+    steps:
+      # Step 1: Render Deploy Action
+      - name: Render Deploy Action
+        # Use the "johnbeynon/render-deploy-action" action
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
