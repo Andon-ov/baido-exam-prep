@@ -17,7 +17,6 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v3
@@ -29,8 +28,10 @@ jobs:
         
     - name: Install NPM
       run: npm install
+
     - name: Running Unit Tests
       run: npm run test:unit 
+
     - name: Display Softuni username
       run: echo "baido"
   
@@ -44,10 +45,34 @@ jobs:
 
     # Specify the steps to be executed in the job
     steps:
-      # Step 1: Render Deploy Action
       - name: Render Deploy Action
-        # Use the "johnbeynon/render-deploy-action" action
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
           service-id: ${{ secrets.SERVICE_ID }}
           api-key: ${{ secrets.RENDER_API_KEY }}
+
+  ui_tests:
+     needs: build
+     runs-on: ubuntu-latest
+     
+     strategy:
+      matrix:
+        node-version: [14.x]
+
+     steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          
+      - name: Install NPM
+        run: npm install
+      
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+  
+      - name: Running UI Tests
+        run: npm run test:ui 
+  
